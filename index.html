@@ -1,593 +1,326 @@
-
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
-/>
-<style>
-*{
-    margin:0;
-    padding: 0;
-}
-.tab {
-  display: flex;
-  justify-content: space-around;
-  background-color: aquamarine;
-  opacity: 0.7;
-  padding: 5px;
-  font-size: 20px;
-  border-radius: 3px;
-}
-.tab.active{
-    opacity: 1;
-}
-
-.navtab li{
-    list-style-type: none;
-}
-.addplace input{
-    height: 100%;
-    width: 60%;
-    padding: 5px;
-    /* margin */
-    /* width: auto; */
-    font-size: 20px;
-    /* border: 1px solid rgb(249, 247, 247); */
-    /* border-radius: 5px; */
-    border: none;
-    background-color: aliceblue;
-}
-.addplace button{
-    /* position: absolute; */
-    height: 100%;
-    font-size: 20px;
-    padding: 5px;
-    /* padding-left: 2px; */
-    /* margin-left: 0; */
-    /* width: 60px; */
-    /* float: right; */
-    background-color:  rgb(126, 160, 172);
-    /* border: 1px solid rgb(126, 160, 172); */
-    /* border: 1px solid rgb(249, 247, 247); */
-    border-right: none;
-    /* border-bottom */
-    /* border-radius: 3px; */
-    /* outline: none; */
-}
-
-.navtab li button{
-    /* outline: none; */
-    /* background-color:yellow; */
-    font-size: 20px;
-    /* width: 33%; */
-    border: none;
-    /* background-color: transparent; */
-    /* line-height: 15px; */
-    margin-left: none;
-}
-.navtab li button:hover{
-    /* color: blue; */
-    background-color: brown;
-}
-#tabBody{
-    background-color: aliceblue;
-    max-height: 250px;
-    overflow-y: auto;
-    /* margin-bottom: 2px; */
-}
-.container{
-    width: 300px;
-}
-.maincontent{
-    height: 25px;
-    /* margin-bottom: 3px; */
-    border: 1px solid rgb(132, 114, 114);
-    margin-bottom: 3px;
-    border-radius: 2px;
- /* border: 3px; */
-}
-.maincontent span{
-    font-size: 20px;
-}
-.maincontent li i{
-    float: right;
-    /* padding: 5px; */
-}
-.maincontent li{
-    padding: 5px;
-}
-.maincontent li input:checked{
-    text-decoration: line-through;
-}
-.maincontent:last-child{
-    margin-bottom: 0;
-}
-li{
-    list-style-type: none;
-}
-.clear {
-    background-color: green;
-    /* position: absolute; */
-    /* align-items: end; */
-    text-align: right;
-}
-.clear button{
-   font-size: 15px;
- margin:3px 3px 3px 0px;
- border-radius: 4px;
- font-family: sans-serif;
- border: none;
-}
-#id{
-    height: 100%;
-    width: 15px;
-}
-.searchbar{
-    height: 100%;
-
-}
-.searchbar input{
-    font-size: 20px;
-
-}
-
-</style>
-</head>
-<body>
-<div class="container">
-<form name="myForm"  id="my_form" class="addplace">
- <input type="text" name="formname" id="fname" placeholder="Add task">
- <button id="btn" type="submit">ADD</button>
-</form>
-<div class="searchbar">
-    <input type="text" id="searchitem">
-   <i class="fa fa-search" aria-hidden="true" id="Search" onclick="_search()"></i>
-</div>
-<div id="tabWrapper" class="tab"></div>
-<div id="tabBody"></div>
-<div class="clear" > <button onclick="_clear()">CLEAR</button></div>
-  <!-- <input type="text" id="fname" name="formname" placeholder="Add task"> -->
-
-<!-- <div id="_count"> pfdfdf</div> -->
-</div>
-<script>
-   let tabList=[
-    {
-        name:'All',
-        isActive:true
-    },
-    {
-        name:'Pending',
-        isActive:   false 
-    },
-    {
-        name:'Completed',
-        isActive:false
-    }
-   ];
-   const form=document.getElementById('my_form');
-   form.addEventListener("submit",function submitform(event){
-    event.preventDefault();
-    let x=document.forms["myForm"]["formname"].value;
-    if(x==""){
-        alert("should not empty value");
-        return false;
-    }
-    else{
-        let allIndex=tabList.findIndex((e)=>e.isActive);
-        createList(x,allIndex);
-        // console.log('x',allIndex);
-        form.reset();
-    }
-   });
-   let Result=document.getElementById("_count");
-   let listArr=[];
-   let myList='';
-   let tabnav= document.getElementById('tabWrapper');
-   let _tabBody=document.getElementById('tabBody')
-   tabList.map((data)=>{
-    myList+=`<ul class="navtab">
-    <li>
-    <button onclick="display(this)" value=${data["name"]}>`+
-        data["name"]+`</button>
-        </li></ul>`;
-    // console.log('myList',myList);
-   })
-   tabnav.innerHTML=myList;
-function createList(text,all_tab){
-    listArr.push({name:text,status:false,found:false});
-    // console.log("listArr",listArr);
-    display(listArr);
-
- }
-// let Result=document.getElementById(_count);
- let _searchitems=document.getElementById("searchitem")
-//  let _search=document.getElementById("Search")
-//  console.log(newdate);
-function display(_values){
-
-    if(listArr.length>=0){
-        let _mylist='';
-        let temp=listArr;
-        if(_values['value'] == 'Pending'){
-            // listArr.length=0;
-	  		temp = listArr.filter(e=> {return !e.status});
-        //    let Result=document.getElementById("_count");
-        //    Result.innerHTML=listArr.length;
-	  	}
-	  	if(_values['value'] == 'Completed'){
-	  		console.log('Completed')
-	  		temp = listArr.filter(e=> {return e.status});
-	  	}
-       
-        // _search.addEventListener('click',()=>{})
-	  	// if(_values['value'] == 'All'){
-          
-        //   temp= listArr.filter(e=> {return e.found});
-
-        // }
-        //   filtersearch();
-        
-
-        //   _searchitems.addEventListener("click",()=>{
-            //  if(_values['value']=='All'){
-                    //   temp= listArr.filter(e=> {return e.found});
-            //  }
-        //   })
-
-        temp.map((data,index)=>{
-            
-            console.log("dat[status]",data['status']);
-            _mylist+=data['status']?
-        
-            // `<input type="checkbox" onclick=handleclick(this) checked value=${index} >`
-    // `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this) checked value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`+ newdate
-    `<ul class="maincontent">
-        <li><input type="checkbox"
-         onclick=handleclick(this) checked value=${index}>
-         <span  >`+data['name']
-            +`</span>
-            <i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})">
-                </i>
-            </li>
-            </ul>`
-            :
-            // `<input type="checkbox" onclick=handleclick(this)  value=${index}>`
-    `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this)  value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-            ;
-            // _mylist+=`<ul class="maincontent"><li><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-                        ;
-            console.log(_mylist);
-
-    //         console.log("length of list array",listArr.length);
-    // var span=document.getElementsByTagName('span');
-    // var sam=span.textContent
-        })
-        _tabBody.innerHTML=_mylist;
-        //  _search(_mylist);
-    }
-   
-    // let Result=document.getElementById("_count").innerHTML=listArr.length;
-    // `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this) checked value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-    // Result.innerHTML=;
-    // `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this)  value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-     
-    // document.write("arr.length is : " + listArr.length); 
-    // Result.innerHTML=listArr.length;
-
-    // console.log("length of list array",listArr.length);
-    // var span=document.getElementsByTagName('span');
-    // var sam=span.textContent
-    // console.log("mylistcontent",data['name']);
-
-}
-function handleclick(check){
-    if(check.checked){
-        listArr[check.value]['status']=true;
-    }
-    else{
-        listArr[check.value]['status']=false;
-    }
-   
-
-
-}
-
-// function _filtersearch(this){
-//           var input,_filter,i;
-//           input=document.getElementById("searchitem");
-//           _filter = input.value.toLowerCase();
-//           for(i=0;i<listArr.length;i++){
-//             if(input.value==listArr[i]['name']){
-//                 listArr[check.value]['found']=true;
-//             }
-//             else{
-//                 listArr[check.value]['found']=flase;
-
-//             }
-//           }
-// }
-
-
-
-function _remove(index){
-    // myList.splice(index,1)
-    //  console.log(index(myList));
-    // console.log(myList);
-    console.log(index);
-    listArr.splice(index,1);
-    // console.log(listArr.findIndex(index));
-    // let i=listArr[index];
-    // console.log(listArr.findIndex(listArr[index]));
-    //  let i=listArr.findIndex(index)
-    //  console.log(listArr[index]);
-    display(listArr);
-    // console.log("length of list array",listArr.length);
-}
-function _clear(){
-    // listArr='';
-    // display(listArr);
-    listArr = [];
-    
-    // listArr.splice(0,listArr.length)
-    // a.splice(0,a.length);
-    display(listArr);
-
-}
-
-function _search(){
-    var input_,_filter,i;
-          input_=document.getElementById("searchitem");
-          _filter = input_.value.toLowerCase();
-          for(i=0;i<listArr.length;i++){
-            // if(input_.value==listArr[i]['name'])
-            if((/(input.value)/gi).test(listArr[i]['name']))
-            {
-                listArr[i]['found']=true;
-                // console.log('listArr[i]',listArr[i]['found']);
-            }
-            else{
-                listArr[i]['found']=false;
-
-            }
-             }
-             console.log("listArr",listArr);
-         display(listArr);  
-}
-
-(/abc/.test("abcde"))
-
-
-function __search(allitems){
-    var input,filter,i;
-    //  input=document.forms["myForm"]["formname"].value;
-
-    input=document.getElementById("searchitem");
-    _filter = input.value.toLowerCase();
-    // console.log('filter',filter);
-        // console.log("filte",filter);
-    for(i=0;i<listArr.length;i++){
-        // newArr=[];
-        if(input.value==listArr[i]['name'])
-        // if(filter.includes(regex().test(listArr[i]['name'])))
-
-	  		// temp = listArr.filter(e=> {return e.status});
-
-        {
-        console.log("match found",listArr[i]);
-        //  newArr.push({name:text,status:false});
-         let __mylist='';
-        let temp=listArr;
-        // display(listArr[i]['name'])
-       }
-        else{
-            console.log("notfound")
-            // listArr.remove(i);
-            console.log("new array",listArr)
-            // continue;
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
         }
-//         const regexp = new RegExp(listArr[i]['name'], 'i');
-//         let out=listArr.filter(x => regexp.test(_filter))
-//  console.log(out);
-        
 
-    }
-
-}    
-//  console.log(out);
-    // const regexp = new RegExp(listArr[i]['name'], 'i');
-    // let out=listArr.filter(x => regexp.test(_filter))
-//   display(out)
-
-    //     let sam_l=[]
-    //     sam_l+=listArr[i];
-    //     console.log(sam_l);
-    //    console.log('allitems',allitems);
-
-//    const allitem=my
-
-        
-
-    //     break;}
-        
-    //     else{
-    //         console.log("notfound");
-    //     } 
-  
+        .tab {
+            display: flex;
+            justify-content: space-around;
+            opacity: 0.7;
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 3px;
+        }
 
 
+        .navtab li {
+            list-style-type: none;
+        }
 
-        
-    
+        .addplace input {
+            height: 100%;
+            width: 70%;
+            padding: 5px;
 
-    // temp = listArr.filter(()=>{
-    //     var input,filter,i;
-    // //  input=document.forms["myForm"]["formname"].value;
+            font-size: 20px;
 
-    // input=document.getElementById("fname");
-    // filter = input.value;
-    //  return input.value==listArr[0]['name'];
-    // });
-    // console.log('temp',temp);
+            border: none;
+            background-color: aliceblue;
+        }
 
-    // op=document.getElementById("opvalues")
+        .addplace button {
+            height: 100%;
+            font-size: 20px;
+            padding: 5px;
+            color: #ffffff;
+            background-color: #3f51b5;
 
-//    s_display(listArr);
+            border: none;
+            border-radius: 3px;
+        }
 
+        .navtab li button {
 
-//--------------
+            font-size: 20px;
 
-//=========
-    
+            border: none;
+            margin-left: none;
+        }
 
-// function s_display(_values){
+        .navtab li button:hover {
+            color: blue;
+        }
 
-// if(listArr.length>=0){
-//     let _mylist='';
-//     let temp=listArr;
-//     var input,filter,i;
-//     input=document.getElementById("fname");
-//     filter = input.value;
+        #tabBody {
+            background-color: #ffffffce;
+            max-height: 250px;
+            overflow-y: auto;
+        }
 
+        .container {
+            width: 300px;
+        }
 
-//     if(_values['value'] == 'Pending'){
-       
-//           temp = listArr.filter(e=> {return !e.status});
-    
-//       }
-//       if(_values['value'] == 'Completed'){
-//           console.log('Completed')
-//           temp = listArr.filter(e=> {return e.status});
-//       }
-//     temp.map((data,index)=>{
-        
-//         console.log("dat[status]",data['status']);
-//         _mylist+=input.value==listArr[0]['name']? data['status']?
+        .maincontent {
+            height: auto;
+            padding: 10px;
+            border: 1px solid rgb(132, 114, 114);
+            border-radius: 2px;
 
-       
-// `<ul class="maincontent"><li><input type="checkbox"
-//      onclick=handleclick(this) checked value=${index}><span  >`+data['name']
-//         +`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})">
-//             </i></li></ul>`
-        
-//         :
-        
-// `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this)  value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-//         :console.log("notfound")
-//         ;
-        
-//                     ;
-//         console.log(_mylist);
+        }
 
+        /* .maincontent span{
+    font-size: 20px;
+} */
+        .maincontent li i {
+            float: right;
+        }
 
+        /* .maincontent li{
+    padding: 5px;
+} */
 
-//     })
-//     _tabBody.innerHTML=_mylist;
-// }
+        /* .maincontent:last-child{
+    margin-bottom: 0;
+} */
+        li {
+            list-style-type: none;
+        }
 
+        .clear {
+            background-color: green;
 
-// }
+            text-align: right;
+        }
 
+        .clear button {
+            font-size: 15px;
+            margin: 3px 3px 3px 0px;
+            border-radius: 4px;
+            font-family: sans-serif;
+            border: none;
+        }
 
+        #id {
+            height: 100%;
+            width: 15px;
+        }
 
+        .searchbar {
+            height: 100%;
 
-//------------------------------
-// console.log(listArr.length)_mylist['span']
+        }
 
-// if(listArr.length>0)
-// {
-//     console.log(listArr.length)
-    // Result.innerHTML=listArr.length;
-   
-// }
-// else{
-//     // listArr.length=0;
-//     console.log(listArr.length)
+        .searchbar input {
+            font-size: 20px;
 
-// }
-// var dateObj = new Date();
-// var month = dateObj.getUTCMonth() + 1; 
-// var day = dateObj.getUTCDate();
-// var year = dateObj.getUTCFullYear();
+        }
 
-//  let newdate = day + "/" + month + "/" + year;
+        .stripe {
+            text-decoration: line-through;
+        }
 
+        .active {
+            color: rgb(18, 142, 195);
+        }
 
+        #bydate {
+            margin-left: 18px;
+        }
 
+        /* #tabs .active{
+    background-color: black;
+} */
+    </style>
+</head>
 
+<body>
+    <div class="container">
+        <form name="myForm" id="my_form" class="addplace" autocomplete="off">
+            <input type="text" name="formname" id="fname" placeholder="Add task">
+            <button id="btn" type="submit">ADD</button>
+        </form>
+        <div class="searchbar">
+            <input type="text" id="searchitem">
+            <i class="fa fa-search" aria-hidden="true" id="Search" onclick="search_list()"></i>
 
-
-
-
-
-
-
-
-
-
-
-
-function _display(_values){
-
-if(listArr.length>=0){
-    let _mylist='';
-    let temp=listArr;
-    if(_values['value'] == 'Pending'){
-        // listArr.length=0;
-          temp = listArr.filter(e=> {return !e.status});
-    //    let Result=document.getElementById("_count");
-    //    Result.innerHTML=listArr.length;
-      }
-      if(_values['value'] == 'Completed'){
-          console.log('Completed')
-          temp = listArr.filter(e=> {return e.status});
-        // let Result=document.getElementById("_count").innerHTML=listArr.length;
-      }
-    temp.map((data,index)=>{
-        
-        console.log("dat[status]",data['status']);
-        _mylist+=data['status']?
-
-        // `<input type="checkbox" onclick=handleclick(this) checked value=${index} >`
-// `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this) checked value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`+ newdate
-`<ul class="maincontent"><li><input type="checkbox"
-     onclick=handleclick(this) checked value=${index}><span  >`+data['name']
-        +`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})">
-            </i></li></ul>`
-        :
-        // `<input type="checkbox" onclick=handleclick(this)  value=${index}>`
-`<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this)  value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-        ;
-        // _mylist+=`<ul class="maincontent"><li><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-                    ;
-        console.log(_mylist);
-
-//         console.log("length of list array",listArr.length);
-// var span=document.getElementsByTagName('span');
-// var sam=span.textContent
-
-    })
-    _tabBody.innerHTML=_mylist;
-    //  _search(_mylist);
-}
-
-// let Result=document.getElementById("_count").innerHTML=listArr.length;
-// `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this) checked value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
-// Result.innerHTML=;
-// `<ul class="maincontent"><li><input type="checkbox" onclick=handleclick(this)  value=${index}><span>`+data['name']+`</span><i class="fa fa-trash" aria-hidden="true" onclick="_remove(${index})"></i></li></ul>`
+        </div>
+        <div id="tabWrapper" class="tab"></div>
+        <div id="tabBody"></div>
+        <div class="clear"> <button onclick="clear_all()">CLEAR</button></div>
  
-// document.write("arr.length is : " + listArr.length); 
-// Result.innerHTML=listArr.length;
+    </div>
+    <script>
+        let tabList = [
+            {
+                name: 'All',
+                isActive: true
+            },
+            {
+                name: 'Pending',
+                isActive: false
+            },
+            {
+                name: 'Completed',
+                isActive: false
+            }
+        ];
+        const form = document.getElementById('my_form');
+        form.addEventListener("submit", function submitform(event) {
+            event.preventDefault();
+            let x = document.forms["myForm"]["formname"].value;
+            let active_element = null;
+            if (x == "") {
+                alert("should not empty value");
+                return false;
+            }
+            else {
+                let allIndex = tabList.findIndex((e) => e.isActive);
+                createList(x, allIndex);
+                form.reset();
+            }
+        });
+        let Result = document.getElementById("_count");
+        let listArr = [];
+        let myList = '';
+        let tabnav = document.getElementById('tabWrapper');
+        let tab_body = document.getElementById('tabBody')
+        tabList.map((data) => {
+            myList += `<ul class="navtab">
+    <li id=tabs>
+    <button class="active" onclick="display(this)" value=${data["name"]}>` +
+                data["name"] + `</button>
+        </li></ul>`;
 
-// console.log("length of list array",listArr.length);
-// var span=document.getElementsByTagName('span');
-// var sam=span.textContent
-// console.log("mylistcontent",data['name']);
+        
+        })
+        tabnav.innerHTML = myList;
 
-}
+        function createList(text, all_tab) {
+            listArr.push({ name: text, status: false });
+            display(listArr);
+        }
+        let _searchitems = document.getElementById("searchitem")
+        var dateObj = new Date();
+        var month = dateObj.getUTCMonth();
+        var day = dateObj.getUTCDate();
+        var year = dateObj.getUTCFullYear();
+        let newdate = day + "/" + month + "/" + year;
 
-</script>
-   
+        function display(values, sortArr) {
+            console.log("sortArr", sortArr);
+            let sort_arr = false;
+
+            if (values) {
+                active_element = values;
+            }
+            else {
+                values = active_element;
+            }
+            if (listArr.length >= 0) {
+                let my_list = '';
+                let temp = sortArr ? sortArr : listArr;
+                let tabs_active = document.getElementById("tabs");
+
+                if (values['value'] == 'Pending') {
+                    // listArr.length=0;
+                    temp = sortArr ? sortArr.filter(e => { return !e.status }) : listArr.filter(e => { return !e.status });
+
+                }
+                if (values['value'] == 'Completed') {
+                    console.log('Completed')
+                    temp = sortArr ? sortArr.filter(e => { return e.status }) : listArr.filter(e => { return e.status });
+                }
+
+                console.log("isactive", tabList[0]['isActive']);
+
+
+                temp.map((data, index) => {
+
+                    my_list += data['status'] ?
+
+
+                    `<ul class="maincontent">
+                        <li class="stripe">
+                            <input type="checkbox"onclick=handleclick(this) checked value=${index}>
+                            <span  >`+ data['name'] + `</span>
+                            <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
+                        </li>
+                        <li><hr style="margin:1px 18px 2px 18px"></li>
+                        <li id="bydate"><p>Created by `+ newdate + `</p></li>
+        
+                     </ul>`
+                        :
+                        `<ul class="maincontent">
+        <li>
+            <input type="checkbox" onclick=handleclick(this)  value=${index}>
+            <span>`+ data['name'] + `</span>
+            <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
+        </li>
+        <li><hr style="margin:1px 18px 2px 18px"></li>
+        <li id="bydate"><p>Created by `+ newdate + `</p></li>
+        
+    </ul>`
+                        ;
+                    ;
+                    console.log(my_list);
+
+
+                })
+                tab_body.innerHTML = my_list;
+            }
+        }
+
+        function handleclick(check) {
+            if (check.checked) {
+                listArr[check.value]['status'] = true;
+                check.parentNode.classList.add("stripe");
+
+            }
+            else {
+                listArr[check.value]['status'] = false;
+                check.parentNode.classList.remove("stripe");
+
+            }
+        }
+        function remove_list(index) {
+
+            console.log(index);
+            listArr.splice(index, 1);
+
+            display(listArr);
+        }
+        function clear_all() {
+
+            listArr = [];
+
+            display(listArr);
+
+        }
+
+        function search_list() {
+            var search_input, filter_key, i;
+            search_input = document.getElementById("searchitem");
+
+
+            filter_key = search_input.value.toLowerCase();
+            let filtered_items = listArr.filter((key) => {
+                key = key['name'].toLowerCase();
+                return key.indexOf(filter_key) > -1;
+            });
+            display(null, filtered_items);
+        }
+
+
+    </script>
+
 </body>
+
 </html>
