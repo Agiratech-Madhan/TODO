@@ -26,7 +26,7 @@
 
         .addplace input {
             height: 100%;
-            width: 70%;
+            width: 30%;
             padding: 5px;
 
             font-size: 20px;
@@ -76,20 +76,10 @@
 
         }
 
-        /* .maincontent span{
-    font-size: 20px;
-} */
+
         .maincontent li i {
             float: right;
         }
-
-        /* .maincontent li{
-    padding: 5px;
-} */
-
-        /* .maincontent:last-child{
-    margin-bottom: 0;
-} */
         li {
             list-style-type: none;
         }
@@ -134,10 +124,10 @@
         #bydate {
             margin-left: 18px;
         }
+       select{
+        -webkit-appearance: none;
+       }
 
-        /* #tabs .active{
-    background-color: black;
-} */
     </style>
 </head>
 
@@ -146,6 +136,12 @@
         <form name="myForm" id="my_form" class="addplace" autocomplete="off">
             <input type="text" name="formname" id="fname" placeholder="Add task">
             <button id="btn" type="submit">ADD</button>
+    <i class="fa-solid fa-filter"class="d_down"> </i>
+    <select id="select_items" >
+        <option id="all_d" selected >All</option>
+        <option id="pending_d" >Pending</option>
+        <option id="completed">Completed</option> </select>
+    <!-- <div class="sam"></div> -->
         </form>
         <div class="searchbar">
             <input type="text" id="searchitem">
@@ -158,126 +154,141 @@
  
     </div>
     <script>
-        let tabList = [
-            {
-                name: 'All',
-                isActive: true
-            },
-            {
-                name: 'Pending',
-                isActive: false
-            },
-            {
-                name: 'Completed',
-                isActive: false
-            }
-        ];
         const form = document.getElementById('my_form');
+
+       let listArr=JSON.parse(localStorage.getItem("TODO"))||[];
+
+ 
+
+
+      
         form.addEventListener("submit", function submitform(event) {
             event.preventDefault();
             let x = document.forms["myForm"]["formname"].value;
             let active_element = null;
-            if (x == "") {
+            let numCheck = RegExp(/^[0-9]/);
+            let num_reg = numCheck.test(x)
+            console.log("checkreg",num_reg);
+            if (x == ""||num_reg) {
                 alert("should not empty value");
                 return false;
             }
-            else {
-                let allIndex = tabList.findIndex((e) => e.isActive);
-                createList(x, allIndex);
+            else
+            {
+                
+                createList(x);
                 form.reset();
+                function createList(text) {
+                 listArr.push({ name: text, status: false });
+                 localStorage.setItem("TODO",JSON.stringify(listArr));
+                 display(listArr);
+                }
+
+
             }
+            
         });
         let Result = document.getElementById("_count");
-        let listArr = [];
+        // let listArr=[];
         let myList = '';
-        let tabnav = document.getElementById('tabWrapper');
         let tab_body = document.getElementById('tabBody')
-        tabList.map((data) => {
-            myList += `<ul class="navtab">
-    <li id=tabs>
-    <button class="active" onclick="display(this)" value=${data["name"]}>` +
-                data["name"] + `</button>
-        </li></ul>`;
+        // function createList(text, all_tab) {
+        //     listArr.push({ name: text, status: false });
+        //     localStorage.setItem("sam",listArr);
+        //     // localStorage.setItem("todo",JSON.stringify(listArr));
 
-
-        })
-        tabnav.innerHTML = myList;
-
-        function createList(text, all_tab) {
-            listArr.push({ name: text, status: false });
-            display(listArr);
-        }
+        //     // localStorage.setItem("TODO",JSON.stringify(listArr));
+        //     // console.log("listarr",listArr)
+        //     display(listArr);
+        // }
         let _searchitems = document.getElementById("searchitem")
         var dateObj = new Date();
         var month = dateObj.getUTCMonth();
         var day = dateObj.getUTCDate();
         var year = dateObj.getUTCFullYear();
         let newdate = day + "/" + month + "/" + year;
+        var xy=[];
 
-        function display(values, sortArr) {
-            console.log("sortArr", sortArr);
-            let sort_arr = false;
-
-            if (values) {
-                active_element = values;
-            }
-            else {
-                values = active_element;
-            }
+        function display(values, sortArr)
+        
+        {
+            console.log("len of local",localStorage.length);
             if (listArr.length >= 0) {
-                let my_list = '';
-                let temp = sortArr ? sortArr : listArr;
-                let tabs_active = document.getElementById("tabs");
+                s=document.getElementById("select_items");
+                var x =s.selectedIndex;
+                console.log("before index",x);
+               s.addEventListener('change',()=>
+               {
+                    x=s.selectedIndex;
+                    displayorg(x);
+                });                                                                                                                                                                                            
+                 console.log("after change",x);
+                //  console.log('listArr_reload',listArr_reload);
 
-                if (values['value'] == 'Pending') {
-                    // listArr.length=0;
-                    temp = sortArr ? sortArr.filter(e => { return !e.status }) : listArr.filter(e => { return !e.status });
+                displayorg(x);
+                 function displayorg(x)
+                 {
+                    if(x==0||x==1||x==2){
+                    let my_list = '';
+                    let temp = sortArr ? sortArr : listArr;
+                    let tabs_active = document.getElementById("tabs");
 
-                }
-                if (values['value'] == 'Completed') {
-                    console.log('Completed')
-                    temp = sortArr ? sortArr.filter(e => { return e.status }) : listArr.filter(e => { return e.status });
-                }
+                    if(x==0){
+                    let temp = sortArr ? sortArr : listArr;
 
-                console.log("isactive", tabList[0]['isActive']);
+                    }
+                    if (x==1)
 
+                        {
+                          temp = sortArr ? sortArr.filter(e => { return !e.status }) : listArr.filter(e => { return !e.status });
 
-                temp.map((data, index) => {
+                        }
+                    if(x==2){
+                     temp = sortArr ? sortArr.filter(e => { return e.status }) : listArr.filter(e => { return e.status });
 
-                    my_list += data['status'] ?
+                     }
+                    temp.map((data, index) => {
 
-
-                    `<ul class="maincontent">
-                        <li class="stripe">
-                            <input type="checkbox"onclick=handleclick(this) checked value=${index}>
-                            <span  >`+ data['name'] + `</span>
-                            <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
-                        </li>
-                        <li><hr style="margin:1px 18px 2px 18px"></li>
-                        <li id="bydate"><p>Created by `+ newdate + `</p></li>
-        
-                     </ul>`
-                        :
-                        `<ul class="maincontent">
-        <li>
-            <input type="checkbox" onclick=handleclick(this)  value=${index}>
-            <span>`+ data['name'] + `</span>
-            <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
-        </li>
-        <li><hr style="margin:1px 18px 2px 18px"></li>
-        <li id="bydate"><p>Created by `+ newdate + `</p></li>
-        
-    </ul>`
-                        ;
-                    ;
-                    console.log(my_list);
+                        my_list += data['status'] ?
 
 
-                })
+                            `<ul class="maincontent">
+                                <li class="stripe">
+                                    <input type="checkbox"onclick=handleclick(this) checked value=${index}>
+                                    <span  >`+ data['name'] + `</span>
+                                    <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
+                                </li>
+                                <li><hr style="margin:1px 18px 2px 18px"></li>
+                                <li id="bydate"><p>Created by `+ newdate + `</p></li>
+                
+                            </ul>`
+                            :
+                            `<ul class="maincontent">
+                                <li>
+                                    <input type="checkbox" onclick=handleclick(this)  value=${index}>
+                                    <span>`+ data['name'] + `</span>
+                                    <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
+                                </li>
+                                <li><hr style="margin:1px 18px 2px 18px"></li>
+                                <li id="bydate"><p>Created by `+ newdate + `</p></li>
+            
+                            </ul>`;
+                    
+
+                    })
+                
                 tab_body.innerHTML = my_list;
-            }
-        }
 
+
+            }}
+        }
+        // localStorage.setItem("TODO",JSON.stringify(listArr));
+
+        console.log("listArray",listArr);
+
+        }
+        
+   
         function handleclick(check) {
             if (check.checked) {
                 listArr[check.value]['status'] = true;
@@ -290,9 +301,55 @@
 
             }
         }
+        
         function remove_list(index) {
+            //  showdata(task);
+            // let samp = JSON.parse(localStorage.getItem("TODO"));
+            //     samp[index].splice(index,1);
+//   localStorage.setItem("tasks", JSON.stringify(task));
+//   showdata();
+    //         const removeProduct = productId => {
+    // // get products from local storage
+    // const index = products.findIndex(product => product.product_id === productId);
+
+    // if (index > -1) {
+    //     products.splice(index, 1);
+    // }
+
+    // store modified array back to local storage.
+            // localStorage.TODO.splice(index, 1);
+            // console.log('localstodgdnsfndifsdi',loc/alStorage[2]);
+            
+    // let i = localStorage.length;
+    // console.log("len of local",i);
+    // while (i-- > 0) {
+    //     let key = localStorage.key(i);
+    //     if (localStorage.getItem(key) === target) {
+    //         localStorage.removeItem(key);
+    //     }
+    // }
+    //   localStorage.removeItem(listArr[0]);
+    // console.log("LOCAL STORAGE",localStorage.TODO[0]);
+                    // localStorage.removeItem(listArr);
+            //  localStorage.removeItem("TODO");
+            // TODO.splice(index, 1);
+                // localStorage.removeItem("TODO"index);
+                // console.log("dfdssssssss",localStorage.TODO[index]);
+
+
+            // console.log("listarrindex",listArr[index]) ;    
+            
+            // for(var i = 0; i < listArr.data.length; i++){ 
+            //   var data = listArr.data[i];
+            //     if(i === index){
+            //       listArr.data.splice(data, 1);
+            //           }
+            //         }
+
 
             console.log(index);
+            
+            // listArr.splice(localStorage.TODO[index],1);
             listArr.splice(index, 1);
 
             display(listArr);
@@ -308,8 +365,6 @@
         function search_list() {
             var search_input, filter_key, i;
             search_input = document.getElementById("searchitem");
-
-
             filter_key = search_input.value.toLowerCase();
             let filtered_items = listArr.filter((key) => {
                 key = key['name'].toLowerCase();
@@ -317,9 +372,14 @@
             });
             display(null, filtered_items);
         }
-
-
-    </script>
+        if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
+  console.log( "This page is  reloaded" );
+  display(listArr);
+//   console.log("reload",listArr_reload);
+} else {
+  console.log( "This page is not reloaded");
+}
+</script>
 
 </body>
 
