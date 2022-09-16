@@ -4,383 +4,48 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        .tab {
-            display: flex;
-            justify-content: space-around;
-            opacity: 0.7;
-            padding: 15px;
-            font-size: 20px;
-            border-radius: 3px;
-        }
-
-
-        .navtab li {
-            list-style-type: none;
-        }
-
-        .addplace input {
-            height: 100%;
-            width: 30%;
-            padding: 5px;
-
-            font-size: 20px;
-
-            border: none;
-            background-color: aliceblue;
-        }
-
-        .addplace button {
-            height: 100%;
-            font-size: 20px;
-            padding: 5px;
-            color: #ffffff;
-            background-color: #3f51b5;
-
-            border: none;
-            border-radius: 3px;
-        }
-
-        .navtab li button {
-
-            font-size: 20px;
-
-            border: none;
-            margin-left: none;
-        }
-
-        .navtab li button:hover {
-            color: blue;
-        }
-
-        #tabBody {
-            background-color: #ffffffce;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-
-        .container {
-            width: 300px;
-        }
-
-        .maincontent {
-            height: auto;
-            padding: 10px;
-            border: 1px solid rgb(132, 114, 114);
-            border-radius: 2px;
-
-        }
-
-
-        .maincontent li i {
-            float: right;
-        }
-        li {
-            list-style-type: none;
-        }
-
-        .clear {
-            background-color: green;
-
-            text-align: right;
-        }
-
-        .clear button {
-            font-size: 15px;
-            margin: 3px 3px 3px 0px;
-            border-radius: 4px;
-            font-family: sans-serif;
-            border: none;
-        }
-
-        #id {
-            height: 100%;
-            width: 15px;
-        }
-
-        .searchbar {
-            height: 100%;
-
-        }
-
-        .searchbar input {
-            font-size: 20px;
-
-        }
-
-        .stripe {
-            text-decoration: line-through;
-        }
-
-        .active {
-            color: rgb(18, 142, 195);
-        }
-
-        #bydate {
-            margin-left: 18px;
-        }
-       select{
-        -webkit-appearance: none;
-       }
-
-    </style>
 </head>
 
-<body>
+<body onload="reload()">
+    
+    <div class="mainContainer">
+        <h1>TODO List</h1>
     <div class="container">
-        <form name="myForm" id="my_form" class="addplace" autocomplete="off">
-            <input type="text" name="formname" id="fname" placeholder="Add task">
-            <button id="btn" type="submit">ADD</button>
-    <i class="fa-solid fa-filter"class="d_down"> </i>
-    <select id="select_items" >
-        <option id="all_d" selected >All</option>
-        <option id="pending_d" >Pending</option>
-        <option id="completed">Completed</option> </select>
-    <!-- <div class="sam"></div> -->
-        </form>
-        <div class="searchbar">
+        
+        <div class="head">
+            <form name="myForm" id="my_form" class="addplace" autocomplete="off">
+                <input type="text" name="formname" id="fname" placeholder="Type Here..." required>
+                <i class="fa fa-search fa-xl" aria-hidden="true" id="Search" onclick="search_list()"></i>
+                <div class="edit">
+                <button id="btn" type="submit">ADD</button>
+                <i class="fa-solid fa-filter fa-xl"  id="ficon"> </i>
+                <select id="select_items" class="select">
+                    <option id="all_d" selected>All</option>
+                    <option id="pending_d">Pending</option>
+                    <option id="completed">Completed</option>
+                </select>
+                </div>
+            </form>
+        </div>
+        <!-- <div class="searchbar">
             <input type="text" id="searchitem">
             <i class="fa fa-search" aria-hidden="true" id="Search" onclick="search_list()"></i>
 
+        </div> -->
+        <!-- <div id="tabWrapper" class="tab"></div> -->
+        <h2>TODO </h2>
+        <div id="tabBody">
+           
+
         </div>
-        <div id="tabWrapper" class="tab"></div>
-        <div id="tabBody"></div>
-        <div class="clear"> <button onclick="clear_all()">CLEAR</button></div>
- 
+        <!-- <div class="clear"> <button onclick="clear_all()">CLEAR</button></div> -->
+
     </div>
-    <script>
-        const form = document.getElementById('my_form');
-
-       let listArr=JSON.parse(localStorage.getItem("TODO"))||[];
-
- 
-
-
-      
-        form.addEventListener("submit", function submitform(event) {
-            event.preventDefault();
-            let x = document.forms["myForm"]["formname"].value;
-            let active_element = null;
-            let numCheck = RegExp(/^[0-9]/);
-            let num_reg = numCheck.test(x)
-            console.log("checkreg",num_reg);
-            if (x == ""||num_reg) {
-                alert("should not empty value");
-                return false;
-            }
-            else
-            {
-                
-                createList(x);
-                form.reset();
-                function createList(text) {
-                 listArr.push({ name: text, status: false });
-                 localStorage.setItem("TODO",JSON.stringify(listArr));
-                 display(listArr);
-                }
-
-
-            }
-            
-        });
-        let Result = document.getElementById("_count");
-        // let listArr=[];
-        let myList = '';
-        let tab_body = document.getElementById('tabBody')
-        // function createList(text, all_tab) {
-        //     listArr.push({ name: text, status: false });
-        //     localStorage.setItem("sam",listArr);
-        //     // localStorage.setItem("todo",JSON.stringify(listArr));
-
-        //     // localStorage.setItem("TODO",JSON.stringify(listArr));
-        //     // console.log("listarr",listArr)
-        //     display(listArr);
-        // }
-        let _searchitems = document.getElementById("searchitem")
-        var dateObj = new Date();
-        var month = dateObj.getUTCMonth();
-        var day = dateObj.getUTCDate();
-        var year = dateObj.getUTCFullYear();
-        let newdate = day + "/" + month + "/" + year;
-        var xy=[];
-
-        function display(values, sortArr)
-        
-        {
-            console.log("len of local",localStorage.length);
-            if (listArr.length >= 0) {
-                s=document.getElementById("select_items");
-                var x =s.selectedIndex;
-                console.log("before index",x);
-               s.addEventListener('change',()=>
-               {
-                    x=s.selectedIndex;
-                    displayorg(x);
-                });                                                                                                                                                                                            
-                 console.log("after change",x);
-                //  console.log('listArr_reload',listArr_reload);
-
-                displayorg(x);
-                 function displayorg(x)
-                 {
-                    if(x==0||x==1||x==2){
-                    let my_list = '';
-                    let temp = sortArr ? sortArr : listArr;
-                    let tabs_active = document.getElementById("tabs");
-
-                    if(x==0){
-                    let temp = sortArr ? sortArr : listArr;
-
-                    }
-                    if (x==1)
-
-                        {
-                          temp = sortArr ? sortArr.filter(e => { return !e.status }) : listArr.filter(e => { return !e.status });
-
-                        }
-                    if(x==2){
-                     temp = sortArr ? sortArr.filter(e => { return e.status }) : listArr.filter(e => { return e.status });
-
-                     }
-                    temp.map((data, index) => {
-
-                        my_list += data['status'] ?
-
-
-                            `<ul class="maincontent">
-                                <li class="stripe">
-                                    <input type="checkbox"onclick=handleclick(this) checked value=${index}>
-                                    <span  >`+ data['name'] + `</span>
-                                    <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
-                                </li>
-                                <li><hr style="margin:1px 18px 2px 18px"></li>
-                                <li id="bydate"><p>Created by `+ newdate + `</p></li>
-                
-                            </ul>`
-                            :
-                            `<ul class="maincontent">
-                                <li>
-                                    <input type="checkbox" onclick=handleclick(this)  value=${index}>
-                                    <span>`+ data['name'] + `</span>
-                                    <i class="fa fa-trash" aria-hidden="true" onclick="remove_list(${index})"></i>
-                                </li>
-                                <li><hr style="margin:1px 18px 2px 18px"></li>
-                                <li id="bydate"><p>Created by `+ newdate + `</p></li>
-            
-                            </ul>`;
-                    
-
-                    })
-                
-                tab_body.innerHTML = my_list;
-
-
-            }}
-        }
-        // localStorage.setItem("TODO",JSON.stringify(listArr));
-
-        console.log("listArray",listArr);
-
-        }
-        
-   
-        function handleclick(check) {
-            if (check.checked) {
-                listArr[check.value]['status'] = true;
-                check.parentNode.classList.add("stripe");
-
-            }
-            else {
-                listArr[check.value]['status'] = false;
-                check.parentNode.classList.remove("stripe");
-
-            }
-        }
-        
-        function remove_list(index) {
-            //  showdata(task);
-            // let samp = JSON.parse(localStorage.getItem("TODO"));
-            //     samp[index].splice(index,1);
-//   localStorage.setItem("tasks", JSON.stringify(task));
-//   showdata();
-    //         const removeProduct = productId => {
-    // // get products from local storage
-    // const index = products.findIndex(product => product.product_id === productId);
-
-    // if (index > -1) {
-    //     products.splice(index, 1);
-    // }
-
-    // store modified array back to local storage.
-            // localStorage.TODO.splice(index, 1);
-            // console.log('localstodgdnsfndifsdi',loc/alStorage[2]);
-            
-    // let i = localStorage.length;
-    // console.log("len of local",i);
-    // while (i-- > 0) {
-    //     let key = localStorage.key(i);
-    //     if (localStorage.getItem(key) === target) {
-    //         localStorage.removeItem(key);
-    //     }
-    // }
-    //   localStorage.removeItem(listArr[0]);
-    // console.log("LOCAL STORAGE",localStorage.TODO[0]);
-                    // localStorage.removeItem(listArr);
-            //  localStorage.removeItem("TODO");
-            // TODO.splice(index, 1);
-                // localStorage.removeItem("TODO"index);
-                // console.log("dfdssssssss",localStorage.TODO[index]);
-
-
-            // console.log("listarrindex",listArr[index]) ;    
-            
-            // for(var i = 0; i < listArr.data.length; i++){ 
-            //   var data = listArr.data[i];
-            //     if(i === index){
-            //       listArr.data.splice(data, 1);
-            //           }
-            //         }
-
-
-            console.log(index);
-            
-            // listArr.splice(localStorage.TODO[index],1);
-            listArr.splice(index, 1);
-
-            display(listArr);
-        }
-        function clear_all() {
-
-            listArr = [];
-
-            display(listArr);
-
-        }
-
-        function search_list() {
-            var search_input, filter_key, i;
-            search_input = document.getElementById("searchitem");
-            filter_key = search_input.value.toLowerCase();
-            let filtered_items = listArr.filter((key) => {
-                key = key['name'].toLowerCase();
-                return key.indexOf(filter_key) > -1;
-            });
-            display(null, filtered_items);
-        }
-        if (performance.navigation.type == performance.navigation.TYPE_RELOAD) {
-  console.log( "This page is  reloaded" );
-  display(listArr);
-//   console.log("reload",listArr_reload);
-} else {
-  console.log( "This page is not reloaded");
-}
-</script>
-
+</div>
+    <script src="script.js">
+    </script>
 </body>
 
 </html>
